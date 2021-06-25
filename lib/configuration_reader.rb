@@ -16,21 +16,12 @@
 
 # frozen_string_literal: true
 
-require_relative 'lib/parser'
-require_relative 'lib/scanner'
-require_relative 'lib/exceptions'
+class ConfigurationReader
+  attr_reader :pathname
 
-begin
-  if ARGV[0].nil? 
-    raise MissingOptions.new
-    exit(0)
-  else
-    params = Parser.execute
-    scanner = Scanner.new(params)
-    scanner.execute  
+  def initialize(pathname)
   end
-rescue
+
+  private def read_configuration_from_file
+  end
 end
-
-
-

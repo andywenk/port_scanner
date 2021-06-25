@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 # Copyright [2021] [sum.cumo Sapiens GmbH]
 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,22 +13,16 @@
 # limitations under the License.
 
 # frozen_string_literal: true
-
-require_relative 'lib/parser'
-require_relative 'lib/scanner'
-require_relative 'lib/exceptions'
-
-begin
-  if ARGV[0].nil? 
-    raise MissingOptions.new
-    exit(0)
-  else
-    params = Parser.execute
-    scanner = Scanner.new(params)
-    scanner.execute  
+ 
+class InvalidConfigurationFileSyntax < StandardError
+  def initialize
+    super
   end
-rescue
 end
 
-
-
+class MissingOptions < StandardError
+  def initialize
+    super
+    puts "You need to specify at least one option"
+  end
+end
