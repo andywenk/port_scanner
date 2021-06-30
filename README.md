@@ -18,7 +18,7 @@ The configuration file needs to be a valid JSON file.
 
     {
       "domain_name": "www.example.com",
-      "ports": [21,22,23,25,53,80,443,3306,5601,8080]
+      "ports": [21,22,23,25,53,80,443,3306,5601,8080],
       "timeout": 2
     }
 
