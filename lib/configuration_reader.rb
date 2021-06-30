@@ -16,12 +16,31 @@
 
 # frozen_string_literal: true
 
+require 'pathname'
+require 'json'
 class ConfigurationReader
-  attr_reader :pathname
+  attr_reader :pathname, :configuration_file, :json_from_file
 
   def initialize(pathname)
+    @pathname = pathname.dump
+    @configuration_file = get_configuration_file_from_string
+    @json_from_file = read_configuration_from_file
+  end
+
+  private def get_configuration_file_from_string
+    raise ConfigurationFileDoesNotExist unless File.exists?(pathname) 
+    Pathname.new(pathname)
   end
 
   private def read_configuration_from_file
+    configuration_file_content = File.read(configuration_file)
+    parse_json_from_file(configuration_file_content)      
   end
+
+  private def parse_json_from_file(configuration_file_content)
+    JSON.parse(configuration_file_content)
+    rescue JSON::ParserError => e
+      InvalidConfigurationFileSyntax.new(e)
+  end
+
 end

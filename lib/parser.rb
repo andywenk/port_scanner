@@ -18,30 +18,36 @@ require 'optparse'
 require 'ostruct'
 require 'pp'
 
-Params = Struct.new(:domain_name, :configuration_file)
+Params = Struct.new(:domain_name, :configuration_file, :json_from_file)
 
 class Parser
   def self.execute    
-    begin
-      params = Params.new
+    
+    params = Params.new
+    
+    OptionParser.new do |opts|
+      opts.on('-d STRING', String, 'Define the domain URI and run with default values') do |domain_name|
+        params.domain_name = domain_name
+      end
 
-      OptionParser.new do |opts|
-        opts.on('-d STRING', String, 'Define the domain URI and run with default values') do |d|
-          params.domain_name = d
-        end
-        opts.on('-c STRING', String, "Path to JSON configuration file: \n#{@config}") do |c|
-          params.configuration_file = c
-        end
-        opts.on('-h', '--help', 'Print this help') do |h|
-          puts opts
-          exit(0)
-        end
-      end.parse!
-    rescue OptionParser::MissingArgument
+      opts.on('-c STRING', String, "Path to JSON configuration file \n#{@config}") do |configuration_file|
+        params.configuration_file = configuration_file
+        configuration_reader = ConfigurationReader.new(configuration_file)
+        params.json_from_file = configuration_reader.json_from_file
+      end
+      
+      opts.on('-h', '--help', 'Print this help') do |h|
+        puts opts
+        exit(0)
+      end
+    end.parse!
+    
+    params
+
+    rescue OptionParser::MissingArgument => e
       puts 'There is a missing argument for this option'
       exit(0)
-    end
-    params
+    rescue InvalidConfigurationFileSyntax
   end
 
   def self.config 

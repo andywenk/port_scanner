@@ -19,18 +19,37 @@
 require_relative 'lib/parser'
 require_relative 'lib/scanner'
 require_relative 'lib/exceptions'
+require_relative 'lib/configuration_reader'
 
-begin
-  if ARGV[0].nil? 
-    raise MissingOptions.new
+puts "Most simplistic port scanner. Get help with -h\n"
+
+if ARGV[0].nil? 
+  raise MissingOptions.new
+  exit(0)
+else
+  params = Parser.execute
+
+  puts "WARNING: some domain owners see port scanning as a threat! Be sure, that you\n"
+  puts "have the permission to scan the ports\n\n"
+  print "I understand the warning and have permission to scan the ports (yes | no): "
+  permission = gets.chomp
+
+  if permission != "yes"
     exit(0)
-  else
-    params = Parser.execute
-    scanner = Scanner.new(params)
-    scanner.execute  
   end
-rescue
+
+  puts "\nReading the configuration and parameters ...\n\n"
+
+  if params.class == Params && !params.json_from_file.nil?
+    puts "Domain:\t\t #{params.json_from_file["domain_name"]}"
+    puts "Ports:\t\t #{params.json_from_file["ports"]}"
+    puts "Timeout:\t #{params.json_from_file["timeout"]}\n\n"
+  end
+  sleep(2)
+  
+  puts "Starting the scan now ...\n\n"
+  puts "------------- results -------------"
+  scanner = Scanner.new(params)
+  scanner.execute  
+  puts "--------------- end ---------------"
 end
-
-
-
